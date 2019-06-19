@@ -1,18 +1,20 @@
-import discord
+from discord import Activity
+from discord import ActivityType
 import string
 import asyncio
 from Key import Key
 from bs4 import BeautifulSoup
 import urllib3
 urllib3.disable_warnings()
-from math import ceil
 
-client = discord.Client()
+import gvars
+gvars.init()
+
+from Currency import Currency
+
+client = gvars.client
 
 juul = 15.99/4
-
-currencyPrices = []
-currencies = []
 
 def updateCurrencyConversions():
 	pool = urllib3.PoolManager()
@@ -27,12 +29,12 @@ def updateCurrencyConversions():
 		if (k % 2 != 0 or k != 0):
 			del currenciesElements[k]
 
-	if (currencyPrices == []):
+	if (gvars.currencyPrices == []):
 		for k, v in enumerate(currenciesElements):
-			currencyPrices.append(float(v.contents[0].decode_contents()) * juul)
+			gvars.currencyPrices.append(float(v.contents[0].decode_contents()) * juul)
 	else:
 		for k, v in enumerate(currenciesElements):
-			currencyPrices[k] = float(v.contents[0].decode_contents()) * juul
+			gvars.currencyPrices[k] = float(v.contents[0].decode_contents()) * juul
 	print("Done!...")
 
 @client.event
@@ -51,7 +53,7 @@ async def on_ready():
 	print(client.user.id)
 	print('------')
 
-	await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="!jp help"))
+	await client.change_presence(activity=Activity(type=ActivityType.watching, name="!jp help"))
 
 	currencyTimer = asyncio.ensure_future(timerTask(300))
 	updateCurrencyConversions()
@@ -77,52 +79,9 @@ async def on_ready():
 async def on_message(message):
 		#HELP COMMAND
 	if (message.content.startswith("!juulpod convert") or message.content.startswith("!jp convert")):
-		for currency in currencies:
+		for currency in gvars.currencies:
 			if (currency.parseMessage(message)):
 				await currency.sendConverstion(message)
 				return
-
-class Currency:
-	def __init__(self, name, currencyNameSpaces, conversionRate=None):
-		self.name = name
-		self.nameSpaces = currencyNameSpaces
-		self.conversionRate = conversionRate
-		currencies.append(self)
-
-		if (self.conversionRate == None):
-			self.conversionRate = currencyPrices[currencies.index(self)]
-
-	def parseMessage(self, message):
-		if (type(self.nameSpaces) is str):
-			if (message.content.lower().find(self.nameSpaces) != -1):
-				msg = message.content.lower().replace(self.nameSpaces, "")
-
-				for s in msg.split(" "):
-					if (s.isdigit()):
-							self.num = float(s)
-							break
-				return True
-			else:
-				return False
-		elif (type(self.nameSpaces) is list):
-			for nameSpace in self.nameSpaces:
-				if (message.content.lower().find(nameSpace) != -1):
-					for nameSpace in self.nameSpaces:
-						msg = message.content.lower().replace(nameSpace, "")
-					for s in msg.split(" "):
-						if (s.isdigit()):
-							self.num = float(s)
-							break
-					return True
-
-			return False
-
-	@client.event
-	async def sendConverstion(self, message):
-		await message.channel.send(embed=self.generateEmbed(self.num, message))
-
-	def generateEmbed(self, num, message):
-		embed = discord.Embed(title="Juul Pod Currency Converter", description=message.author.mention + " `" + str(num) + " " + self.name + "` is approximately `" + str(ceil((num / self.conversionRate)*100)/100) + " JP (Juul Pods)`\n `Conversion Rate: ~" + str(self.conversionRate) + " " + self.name + " per JP.` [What is this?](https://pastebin.com/raw/PbggM78C)", color=0x8ACC8A)
-		return embed
 
 client.run(Key)
