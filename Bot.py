@@ -6,6 +6,7 @@ import asyncio
 from Key import Key
 from bs4 import BeautifulSoup
 import urllib3
+import datetime
 urllib3.disable_warnings()
 
 import gvars
@@ -18,13 +19,16 @@ client = gvars.client
 juul = 15.99/4
 updateTime = 3600
 
+def botPrint(s):
+	print("[" + datetime.datetime.now().strftime("%Y-%m-%d %H:%M") + "] " + str(s))
+
 def updateCurrencyConversions():
 	pool = urllib3.PoolManager()
 	Content = pool.request('GET', 'https://www.x-rates.com/table/?from=USD&amount=1')
 	soup = BeautifulSoup(Content.data, 'html.parser')
 
 	currenciesElements = soup.find_all('td', {'class': 'rtRates'})
-	print("Updating conversion rates for national currencies...")
+	botPrint("Updating conversion rates for national currencies...")
 
 	currenciesElements = currenciesElements[:20]
 	for k, v in enumerate(currenciesElements):
@@ -38,9 +42,9 @@ def updateCurrencyConversions():
 		for k, v in enumerate(currenciesElements):
 			difference = (float(v.contents[0].decode_contents()) * juul) - gvars.currencyPrices[k]
 			sign = "+" if difference >= 0 else "-" 
-			print(gvars.currencies[k].name + ": " + sign + str(abs(difference)))
+			botPrint(gvars.currencies[k].name + ": " + sign + str(abs(difference)))
 			gvars.currencyPrices[k] = float(v.contents[0].decode_contents()) * juul
-	print("Done!...")
+	botPrint("Done!...")
 	
 @client.event
 async def timerTask(time):
@@ -53,10 +57,10 @@ def timerHandler():
 
 @client.event
 async def on_ready():
-	print('Logged in as')
-	print(client.user.name)
-	print(client.user.id)
-	print('------')
+	botPrint('Logged in as')
+	botPrint(client.user.name)
+	botPrint(client.user.id)
+	botPrint('------')
 
 	await client.change_presence(activity=Activity(type=ActivityType.watching, name="!jp help"))
 

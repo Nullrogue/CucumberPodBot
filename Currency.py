@@ -1,8 +1,12 @@
 import gvars
 from discord import Embed
 from math import ceil
+import datetime
 
 client = gvars.client
+
+def botPrint(s):
+	print("[" + datetime.datetime.now().strftime("%Y-%m-%d %H:%M") + "] " + s)
 
 class Currency:
 	def __init__(self, name, currencyNameSpaces, conversionRate=None):
@@ -45,4 +49,5 @@ class Currency:
 
 	def generateEmbed(self, num, message):
 		embed = Embed(title="Juul Pod Currency Converter", description=message.author.mention + " `" + str(num) + " " + self.name + "` is approximately `" + str(ceil((num / self.conversionRate)*100)/100) + " JP (Juul Pods)`\n `Conversion Rate: ~" + str(self.conversionRate) + " " + self.name + " per JP.` What is this? !jp help", color=0x8ACC8A)
+		botPrint("(GID: " + str(message.guild.id) + ") " + "Converting " + str(num) + " " + self.name + " for user: " + str(message.author) + "...")
 		return embed
