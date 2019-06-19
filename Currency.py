@@ -44,5 +44,5 @@ class Currency:
 		await message.channel.send(embed=self.generateEmbed(self.num, message))
 
 	def generateEmbed(self, num, message):
-		embed = Embed(title="Juul Pod Currency Converter", description=message.author.mention + " `" + str(num) + " " + self.name + "` is approximately `" + str(ceil((num / self.conversionRate)*100)/100) + " JP (Juul Pods)`\n `Conversion Rate: ~" + str(self.conversionRate) + " " + self.name + " per JP.` [What is this?](https://pastebin.com/raw/PbggM78C)", color=0x8ACC8A)
+		embed = Embed(title="Juul Pod Currency Converter", description=message.author.mention + " `" + str(num) + " " + self.name + "` is approximately `" + str(ceil((num / self.conversionRate)*100)/100) + " JP (Juul Pods)`\n `Conversion Rate: ~" + str(self.conversionRate) + " " + self.name + " per JP.` What is this? !jp help", color=0x8ACC8A)
 		return embed

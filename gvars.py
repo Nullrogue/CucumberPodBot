@@ -1,4 +1,4 @@
-import discord
+from discord import Client
 
 def init():
 	global currencyPrices
@@ -8,4 +8,4 @@ def init():
 	currencies = []
 
 	global client
-	client = discord.Client()
+	client = Client()
