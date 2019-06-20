@@ -28,7 +28,7 @@ def updateCurrencyConversions():
 	soup = BeautifulSoup(Content.data, 'html.parser')
 
 	currenciesElements = soup.find_all('td', {'class': 'rtRates'})
-	botPrint("Updating conversion rates for national currencies...")
+	botPrint("\nUpdating conversion rates for national currencies...")
 
 	currenciesElements = currenciesElements[:20]
 	for k, v in enumerate(currenciesElements):
