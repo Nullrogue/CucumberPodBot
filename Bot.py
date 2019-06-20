@@ -58,6 +58,7 @@ def timerHandler():
 
 @client.event
 async def on_ready():
+	botPrint('------')
 	botPrint('Logged in as')
 	botPrint(client.user.name)
 	botPrint(client.user.id)
@@ -88,7 +89,7 @@ async def on_ready():
 @client.event
 async def on_message(message):
 	if (message.content.startswith("!juulpod help") or message.content.startswith("!jp help")):
-		desc = "This bot was created in the hopes to normalize all world wide currencies into one essential value. The Cucumber Juul Pod has been a staple of modern day society, and thus it should be the basis for all world wide economies. This bot converts most prominent currencies found around the world into JP (Juul Pods). Below is a list of the supported currencies that can be converted into JP and their recognizable namespaces."
+		desc = "This bot was created in the hopes to normalize all world wide currencies into one essential value. The Cucumber Juul Pod has been a staple of modern day society, and thus it should be the basis for all world wide economies. This bot converts most prominent currencies found around the world into JP (Juul Pods). Below is a list of the supported currencies that can be converted into JP and their recognizable namespaces. -Nullvalue#8123"
 
 		emb = Embed(title="Juul Pod Help", color=0x8ACC8A, description=desc)
 		currencyText = ""
@@ -114,5 +115,7 @@ async def on_message(message):
 			if (currency.parseMessage(message)):
 				await currency.sendConverstion(message)
 				return
+
+		await message.channel.send(message.author.mention + " Unknown currency, `!jp help` for a list of supported currencies.")
 
 client.run(Key)

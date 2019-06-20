@@ -1,5 +1,6 @@
 import gvars
 from discord import Embed
+from discord import TextChannel
 from math import ceil
 import datetime
 
@@ -48,6 +49,11 @@ class Currency:
 		await message.channel.send(embed=self.generateEmbed(self.num, message))
 
 	def generateEmbed(self, num, message):
-		embed = Embed(title="Juul Pod Currency Converter", description=message.author.mention + " `" + str(num) + " " + self.name + "` is approximately `" + str(ceil((num / self.conversionRate)*100)/100) + " JP (Juul Pods)`\n `Conversion Rate: ~" + str(self.conversionRate) + " " + self.name + " per JP.` What is this? !jp help", color=0x8ACC8A)
-		botPrint("(GID: " + str(message.guild.id) + ") " + "Converting " + str(num) + " " + self.name + " for user: " + str(message.author) + "...")
+		embed = Embed(title="Juul Pod Currency Converter", description=message.author.mention + " `" + str(num) + " " + self.name + "` is approximately `" + str(ceil((num / self.conversionRate)*100)/100) + " JP (Juul Pods)`\n `Conversion Rate: ~" + str(self.conversionRate) + " " + self.name + " per JP.`", color=0x8ACC8A)
+		embed.set_footer(text="What is this? `!jp help` | Nullvalue#8123", icon_url="https://cdn.discordapp.com/app-icons/445098740085161987/787305b551f40d5293fa031806bfe389.png")
+		
+		if (type(message.channel) is TextChannel):
+			botPrint("(GID: " + str(message.guild.id) + ") " + "Converting " + str(num) + " " + self.name + " for user: " + str(message.author) + "...")
+		else:
+			botPrint("(UID: " + str(message.author.id) + ") " + "Converting " + str(num) + " " + self.name + " for user: " + str(message.author) + "...")
 		return embed
