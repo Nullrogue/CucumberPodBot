@@ -88,34 +88,35 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-	if (message.content.startswith("!juulpod help") or message.content.startswith("!jp help")):
-		desc = "This bot was created in the hopes to normalize all world wide currencies into one essential value. The Cucumber Juul Pod has been a staple of modern day society, and thus it should be the basis for all world wide economies. This bot converts most prominent currencies found around the world into JP (Juul Pods). Below is a list of the supported currencies that can be converted into JP and their recognizable namespaces. -Nullvalue#8123"
+	if (not message.author.bot):
+		if (message.content.startswith("!juulpod help") or message.content.startswith("!jp help")):
+			desc = "This bot was created in the hopes to normalize all world wide currencies into one essential value. The Cucumber Juul Pod has been a staple of modern day society, and thus it should be the basis for all world wide economies. This bot converts most prominent currencies found around the world into JP (Juul Pods). Below is a list of the supported currencies that can be converted into JP and their recognizable namespaces. -Nullvalue#8123"
 
-		emb = Embed(title="Juul Pod Help", color=0x8ACC8A, description=desc)
-		currencyText = ""
-		namespaceText = ""
-		for cur in gvars.currencies:
-			currencyText += cur.name + "\n"
-			if (type(cur.nameSpaces) is str):
-				namespaceText += "(\'" + cur.nameSpaces + "\')\n"
-			elif (type(cur.nameSpaces) is list):
-				namespaceText += "("
-				for nameSpace in cur.nameSpaces:
-					if (nameSpace != cur.nameSpaces[len(cur.nameSpaces) - 1]):
-						namespaceText += "\'" + nameSpace + "\', "
-					else:
-						namespaceText += "\'" + nameSpace + "\')\n"
+			emb = Embed(title="Juul Pod Help", color=0x8ACC8A, description=desc)
+			currencyText = ""
+			namespaceText = ""
+			for cur in gvars.currencies:
+				currencyText += cur.name + "\n"
+				if (type(cur.nameSpaces) is str):
+					namespaceText += "(\'" + cur.nameSpaces + "\')\n"
+				elif (type(cur.nameSpaces) is list):
+					namespaceText += "("
+					for nameSpace in cur.nameSpaces:
+						if (nameSpace != cur.nameSpaces[len(cur.nameSpaces) - 1]):
+							namespaceText += "\'" + nameSpace + "\', "
+						else:
+							namespaceText += "\'" + nameSpace + "\')\n"
 
-		emb.add_field(name="Currencies", value=currencyText, inline=True)
-		emb.add_field(name="Name Spaces", value=namespaceText, inline=True)
-		await message.channel.send(embed=emb)
+			emb.add_field(name="Currencies", value=currencyText, inline=True)
+			emb.add_field(name="Name Spaces", value=namespaceText, inline=True)
+			await message.channel.send(embed=emb)
 
-	if (message.content.startswith("!juulpod convert") or message.content.startswith("!jp convert")):
-		for currency in gvars.currencies:
-			if (currency.parseMessage(message)):
-				await currency.sendConverstion(message)
-				return
+		if (message.content.startswith("!juulpod convert") or message.content.startswith("!jp convert")):
+			for currency in gvars.currencies:
+				if (currency.parseMessage(message)):
+					await currency.sendConverstion(message)
+					return
 
-		await message.channel.send(message.author.mention + " Unknown currency, `!jp help` for a list of supported currencies.")
+			await message.channel.send(message.author.mention + " Unknown currency, `!jp help` for a list of supported currencies.")
 
 client.run(Key)
