@@ -1,13 +1,28 @@
 from discord import Activity
 from discord import ActivityType
 from discord import Embed
+from discord import FFmpegPCMAudio
+from discord import errors
+
 import string
 import asyncio
+
 from Key import Key
 from bs4 import BeautifulSoup
+
+from random import choice
+from math import ceil
+
 import urllib3
-import datetime
 urllib3.disable_warnings()
+
+from mutagen.mp3 import MP3
+
+from glob import glob
+import os
+
+import datetime
+import pafy
 
 import gvars
 gvars.init()
@@ -15,6 +30,9 @@ gvars.init()
 from Currency import Currency
 
 client = gvars.client
+
+audio_dir = os.path.dirname(os.path.realpath(__file__)) + "/audio_files/"
+audio_files = glob(audio_dir + "*.mp3")
 
 juul = 15.99/4
 updateTime = 3600
@@ -89,7 +107,25 @@ async def on_ready():
 @client.event
 async def on_message(message):
 	if (not message.author.bot):
-		if (message.content.startswith("!juulpod help") or message.content.startswith("!jp help")):
+		if (message.content.lower().startswith("!juulpod rip") or message.content.lower().startswith("!jp rip")):
+			if (message.author.voice):
+				channel = message.author.voice.channel
+				vc = await channel.connect()
+				audio_file = choice(audio_files)
+				try:
+					vc.play(FFmpegPCMAudio(audio_file))
+				except:
+					vc.play(FFmpegPCMAudio(executable="C:/Program Files (x86)/ffmpeg/bin/ffmpeg.exe", source=audio_file))
+
+				await asyncio.sleep(ceil(MP3(audio_file).info.length))
+
+				vc.stop()
+				await vc.disconnect()
+			else:
+				await message.channel.send(message.author.mention + " You aren't currently in a voice channel bro.")
+			return
+
+		if (message.content.lower().startswith("!juulpod help") or message.content.lower().startswith("!jp help")):
 			desc = "This bot was created in the hopes to normalize all world wide currencies into one essential value. The Cucumber Juul Pod has been a staple of modern day society, and thus it should be the basis for all world wide economies. This bot converts most prominent currencies found around the world into JP (Juul Pods). Below is a list of the supported currencies that can be converted into JP and their recognizable namespaces. -Nullvalue#8123"
 
 			emb = Embed(title="Juul Pod Help", color=0x8ACC8A, description=desc)
@@ -110,8 +146,9 @@ async def on_message(message):
 			emb.add_field(name="Currencies", value=currencyText, inline=True)
 			emb.add_field(name="Name Spaces", value=namespaceText, inline=True)
 			await message.channel.send(embed=emb)
+			return
 
-		if (message.content.startswith("!juulpod convert") or message.content.startswith("!jp convert")):
+		if (message.content.lower().startswith("!juulpod convert") or message.content.lower().startswith("!jp convert")):
 			for currency in gvars.currencies:
 				if (currency.parseMessage(message)):
 					await currency.sendConverstion(message)
