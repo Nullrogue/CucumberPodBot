@@ -22,7 +22,6 @@ from glob import glob
 import os
 
 import datetime
-import pafy
 
 import gvars
 gvars.init()
