@@ -109,6 +109,7 @@ async def on_message(message):
 	if (not message.author.bot):
 		if (message.content.lower().startswith("!juulpod rip") or message.content.lower().startswith("!jp rip")):
 			if (message.author.voice):
+				await message.delete()
 				channel = message.author.voice.channel
 				vc = await channel.connect()
 				audio_file = choice(audio_files)
@@ -117,6 +118,7 @@ async def on_message(message):
 				except:
 					vc.play(FFmpegPCMAudio(executable="C:/Program Files (x86)/ffmpeg/bin/ffmpeg.exe", source=audio_file))
 
+				botPrint("(GID: " + str(message.guild.id) + ") " + "Taking a fat rip for user: " + str(message.author))
 				await asyncio.sleep(ceil(MP3(audio_file).info.length))
 
 				vc.stop()
@@ -143,6 +145,7 @@ async def on_message(message):
 						else:
 							namespaceText += "\'" + nameSpace + "\')\n"
 
+			emb.add_field(name="Commands", value="`!jp rip`\n`!jp convert (namespace)`\n", inline=False)
 			emb.add_field(name="Currencies", value=currencyText, inline=True)
 			emb.add_field(name="Name Spaces", value=namespaceText, inline=True)
 			await message.channel.send(embed=emb)
