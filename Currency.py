@@ -50,10 +50,5 @@ class Currency:
 
 	def generateEmbed(self, num, message):
 		embed = Embed(title="Juul Pod Currency Converter", description=message.author.mention + " `" + str(num) + " " + self.name + "` is approximately `" + str(ceil((num / self.conversionRate)*100)/100) + " JP (Juul Pods)`\n `Conversion Rate: ~" + str(self.conversionRate) + " " + self.name + " per JP.`", color=0x8ACC8A)
-		embed.set_footer(text="What is this? `!jp help` | Nullvalue#8123")
-		
-		if (type(message.channel) is TextChannel):
-			botPrint("(GID: " + str(message.guild.id) + ") " + "Converting " + str(num) + " " + self.name + " for user: " + str(message.author) + "...")
-		else:
-			botPrint("(UID: " + str(message.author.id) + ") " + "Converting " + str(num) + " " + self.name + " for user: " + str(message.author) + "...")
+		embed.set_footer(text="What is this? !jp help | Nullvalue#8123")
 		return embed

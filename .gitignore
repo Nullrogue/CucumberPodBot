@@ -2,3 +2,4 @@ __pycache__/
 .vscode/
 Key.py
 avi.png
+logs/
