@@ -10,7 +10,7 @@ from discord import Guild
 from discord import User
 from discord import TextChannel
 from discord import ClientException
-from Key import Key
+from Key import *
 from bs4 import BeautifulSoup
 from random import choice
 from math import ceil
@@ -18,6 +18,8 @@ from mutagen.mp3 import MP3
 from glob import glob
 from Currency import Currency
 from Logging import *
+
+import dbl
 
 import string
 import asyncio
@@ -27,7 +29,11 @@ import datetime
 import urllib3
 urllib3.disable_warnings()
 
+
 client = gvars.client
+
+token = DBLKey
+dblpy = dbl.Client(client, token)
 
 audio_dir = os.path.dirname(os.path.realpath(__file__)) + "/audio_files/"
 audio_files = glob(audio_dir + "*.mp3")
@@ -67,6 +73,17 @@ async def timerTask(time):
 	currencyTimer = asyncio.ensure_future(timerTask(updateTime))
 
 @client.event
+async def update_stats():
+	while not client.is_closed():
+		logWrite(None, 'Attempting to send server count')
+		try:
+			await dblpy.post_guild_count()
+			logWrite(None, '\tPosted server count ({})'.format(dblpy.guild_count()))
+		except Exception as e:
+			ErrorHandler(None, exception=e)
+		await asyncio.sleep(1800)
+
+@client.event
 async def on_ready():
 	botPrint('------')
 	botPrint('Logged in as')
@@ -79,6 +96,8 @@ async def on_ready():
 	print("")
 
 	await client.change_presence(activity=Activity(type=ActivityType.watching, name="!jp help"))
+
+	client.loop.create_task(update_stats())
 
 	currencyTimer = asyncio.ensure_future(timerTask(updateTime))
 	updateCurrencyConversions()
@@ -173,8 +192,13 @@ async def on_message(message):
 				for currency in gvars.currencies:
 					if (currency.parseMessage(message)):
 						logWrite(message.guild, "\tMatched currency: " + currency.name)
-						await currency.sendConverstion(message)
-						logWrite(message.guild, "\tSent conversion")
+						if (any(char.isdigit() for char in message.content)):
+							await currency.sendConverstion(message)
+							logWrite(message.guild, "\tSent conversion")
+						else:
+							logWrite(message.guild, "\tNo number given in message.")
+							await message.channel.send(message.author.mention + " You did not include a numberto convert!")
+							logWrite(message.guild, "\tSent message indicating no digits in string.")
 						return
 
 				await message.channel.send(message.author.mention + " Unknown currency, `!jp help` for a list of supported currencies.")

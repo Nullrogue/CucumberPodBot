@@ -93,3 +93,6 @@ def ErrorHandler(location, exception, member=None):
 	elif (type(location)is User):
 		logWrite(location, "ERROR IN DM: (UID: " + str(location.id) + ") Logged on line " + str(numLines + 3) + " of error log file...")
 		errorWrite("ERROR IN DM WITH USER: " + str(location.id), exception)
+	elif (location == None):
+		logWrite(None, "ERROR: Logged on line " + str(numLines + 3) + " of error log file...")
+		errorWrite("ERROR: ", exception)
