@@ -2,6 +2,7 @@ from discord import Guild
 from discord import User
 from dateutil import tz
 
+import traceback
 import os
 import datetime
 import gvars
