@@ -11,6 +11,7 @@ from discord import errors
 from discord import Guild
 from discord import User
 from discord import TextChannel
+from discord import DMChannel
 from discord import ClientException
 from asyncio import ensure_future
 from asyncio import sleep
@@ -163,56 +164,57 @@ async def on_message(message):
 
 				return
 
-			if (message.channel.permissions_for(message.guild.me).send_messages):
-				if (message.content.lower().startswith("!juulpod help") or message.content.lower().startswith("!jp help")):
-					logWrite(message.guild, "COMMAND CALLED \"help\" BY USER: " + str(message.author) + "(" + str(message.author.id) + ") IN TEXT CHANNEL: " + ["DM", str(message.channel)][hasattr(message.channel, 'name')] + "(" + str(message.channel.id) + ")")
-					
-					desc = "This bot was created in the hopes to normalize all world wide currencies into one essential value. The Cucumber Juul Pod has been a staple of modern day society, and thus it should be the basis for all world wide economies. This bot converts most prominent currencies found around the world into JP (Juul Pods). Below is a list of the supported currencies that can be converted into JP and their recognizable namespaces. -Nullvalue#8123"
-
-					emb = Embed(title="Juul Pod Help", color=0x8ACC8A, description=desc)
-					currencyText = ""
-					namespaceText = ""
-					for cur in gvars.currencies:
-						currencyText += cur.name + "\n"
-						if (type(cur.nameSpaces) is str):
-							namespaceText += "(\'" + cur.nameSpaces + "\')\n"
-						elif (type(cur.nameSpaces) is list):
-							namespaceText += "("
-							for nameSpace in cur.nameSpaces:
-								if (nameSpace != cur.nameSpaces[len(cur.nameSpaces) - 1]):
-									namespaceText += "\'" + nameSpace + "\', "
-								else:
-									namespaceText += "\'" + nameSpace + "\')\n"
-
-					emb.add_field(name="Commands", value="`!jp rip`\n`!jp convert (namespace)`\n", inline=False)
-					emb.add_field(name="Currencies", value=currencyText, inline=True)
-					emb.add_field(name="Name Spaces", value=namespaceText, inline=True)
-					await message.channel.send(embed=emb)
-					logWrite(message.guild, "\tSent help message for user: " + str(message.author) + "(" + str(message.author.id) + ") in TextChannel: " + ["DM", str(message.channel)][hasattr(message.channel, 'name')] + "(" + str(message.channel.id) + ")")
-					return
-
-				if (message.content.lower().startswith("!juulpod convert") or message.content.lower().startswith("!jp convert")):
-					logWrite(message.guild, "COMMAND CALLED \"convert\" BY USER: " + str(message.author) + "(" + str(message.author.id) + ") IN TEXT CHANNEL: " + ["DM", str(message.channel)][hasattr(message.channel, 'name')] + "(" + str(message.channel.id) + ")")
-					for currency in gvars.currencies:
-						if (currency.parseMessage(message)):
-							logWrite(message.guild, "\tMatched currency: " + currency.name)
-							if (any(char.isdigit() for char in message.content)):
-								await currency.sendConverstion(message)
-								logWrite(message.guild, "\tSent conversion: " + str(currency.num) + " " + currency.name + "to JP = " + "")
-							else:
-								logWrite(message.guild, "\tNo number given in message.")
-								await message.channel.send(message.author.mention + " You did not include a number to convert!")
-								logWrite(message.guild, "\tSent message indicating no digits in string.")
-							return
-
-					await message.channel.send(message.author.mention + " Unknown currency, `!jp help` for a list of supported currencies.")
-					logWrite(message.guild, "\tNo currency recognized in message: \"" + message.content + "\"")
-					return
-
-				await message.channel.send(message.author.mention + " Unknown command, `!jp help` for a list of commands.")
-				logWrite(message.guild, "No command recognized in message: \"" + message.content + "\" BY USER: " + str(message.author) + "(" + str(message.author.id) + ")")
-			else:
+			if (type(message.channel) != DMChannel and not message.channel.permissions_for(message.guild.me).send_messages):
 				await message.author.send("I cannot send messages in channel: " + message.channel.mention)
+				return
+
+			if (message.content.lower().startswith("!juulpod help") or message.content.lower().startswith("!jp help")):
+				logWrite(message.guild, "COMMAND CALLED \"help\" BY USER: " + str(message.author) + "(" + str(message.author.id) + ") IN TEXT CHANNEL: " + ["DM", str(message.channel)][hasattr(message.channel, 'name')] + "(" + str(message.channel.id) + ")")
+				
+				desc = "This bot was created in the hopes to normalize all world wide currencies into one essential value. The Cucumber Juul Pod has been a staple of modern day society, and thus it should be the basis for all world wide economies. This bot converts most prominent currencies found around the world into JP (Juul Pods). Below is a list of the supported currencies that can be converted into JP and their recognizable namespaces. -Nullvalue#8123"
+
+				emb = Embed(title="Juul Pod Help", color=0x8ACC8A, description=desc)
+				currencyText = ""
+				namespaceText = ""
+				for cur in gvars.currencies:
+					currencyText += cur.name + "\n"
+					if (type(cur.nameSpaces) is str):
+						namespaceText += "(\'" + cur.nameSpaces + "\')\n"
+					elif (type(cur.nameSpaces) is list):
+						namespaceText += "("
+						for nameSpace in cur.nameSpaces:
+							if (nameSpace != cur.nameSpaces[len(cur.nameSpaces) - 1]):
+								namespaceText += "\'" + nameSpace + "\', "
+							else:
+								namespaceText += "\'" + nameSpace + "\')\n"
+
+				emb.add_field(name="Commands", value="`!jp rip`\n`!jp convert (namespace)`\n", inline=False)
+				emb.add_field(name="Currencies", value=currencyText, inline=True)
+				emb.add_field(name="Name Spaces", value=namespaceText, inline=True)
+				await message.channel.send(embed=emb)
+				logWrite(message.guild, "\tSent help message for user: " + str(message.author) + "(" + str(message.author.id) + ") in TextChannel: " + ["DM", str(message.channel)][hasattr(message.channel, 'name')] + "(" + str(message.channel.id) + ")")
+				return
+
+			if (message.content.lower().startswith("!juulpod convert") or message.content.lower().startswith("!jp convert")):
+				logWrite(message.guild, "COMMAND CALLED \"convert\" BY USER: " + str(message.author) + "(" + str(message.author.id) + ") IN TEXT CHANNEL: " + ["DM", str(message.channel)][hasattr(message.channel, 'name')] + "(" + str(message.channel.id) + ")")
+				for currency in gvars.currencies:
+					if (currency.parseMessage(message)):
+						logWrite(message.guild, "\tMatched currency: " + currency.name)
+						if (any(char.isdigit() for char in message.content)):
+							await currency.sendConverstion(message)
+							logWrite(message.guild, "\tSent conversion: " + str(currency.num) + " " + currency.name + "to JP = " + "")
+						else:
+							logWrite(message.guild, "\tNo number given in message.")
+							await message.channel.send(message.author.mention + " You did not include a number to convert!")
+							logWrite(message.guild, "\tSent message indicating no digits in string.")
+						return
+
+				await message.channel.send(message.author.mention + " Unknown currency, `!jp help` for a list of supported currencies.")
+				logWrite(message.guild, "\tNo currency recognized in message: \"" + message.content + "\"")
+				return
+
+			await message.channel.send(message.author.mention + " Unknown command, `!jp help` for a list of commands.")
+			logWrite(message.guild, "No command recognized in message: \"" + message.content + "\" BY USER: " + str(message.author) + "(" + str(message.author.id) + ")")
 	except Exception as e:
 		if (message.guild):
 			ErrorHandler(location=message.guild, member=message.author, exception=e)
