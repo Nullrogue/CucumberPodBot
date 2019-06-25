@@ -57,9 +57,8 @@ def initLogs():
 
 def errorWrite(string, exception):
 	logFile = open(os.path.dirname(os.path.realpath(__file__)) + "/logs/errors.log", 'a+')
-	logFile.write("[" + datetime.datetime.now().strftime("%m-%d-%Y %H:%M:%S") + "] ------------------------------------------------------------\n")
-	logFile.write("[" + datetime.datetime.now().strftime("%m-%d-%Y %H:%M:%S") + "] " + str(string) + "\n" + traceback.format_exc() + "\n")
-	logFile.write("[" + datetime.datetime.now().strftime("%m-%d-%Y %H:%M:%S") + "] ------------------------------------------------------------\n")
+	logFile.write("----------------------------------------------------------------------------------------------------------------------------------------------------------------\n")
+	logFile.write("[" + datetime.datetime.now().strftime("%m-%d-%Y %H:%M:%S") + "] " + str(string) + "\n" + traceback.format_exc())
 	logFile.close()
 	
 def logWrite(guild, string):

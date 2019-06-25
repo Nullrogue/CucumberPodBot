@@ -1,6 +1,8 @@
 import gvars
 gvars.init()
 
+from mutagen.mp3 import MP3
+from Currency import Currency
 from discord import Activity
 from discord import ActivityType
 from discord import Embed
@@ -10,30 +12,33 @@ from discord import Guild
 from discord import User
 from discord import TextChannel
 from discord import ClientException
-from Key import *
-from bs4 import BeautifulSoup
+from asyncio import ensure_future
+from asyncio import sleep
+from Logging import *
 from random import choice
 from math import ceil
-from mutagen.mp3 import MP3
 from glob import glob
-from Currency import Currency
-from Logging import *
+from bs4 import BeautifulSoup
 
-import dbl
+try:
+	from Key import *
+	x = DBLKey
+	x = Key
+except Exception as e:
+	print("Couldn't import API keys.")
+	raise
 
-import string
-import asyncio
 import traceback
-import os
 import datetime
 import urllib3
+import string
+import dbl
+import os
+
 urllib3.disable_warnings()
-
-
 client = gvars.client
 
-token = DBLKey
-dblpy = dbl.Client(client, token)
+dblpy = dbl.Client(client, DBLKey)
 
 audio_dir = os.path.dirname(os.path.realpath(__file__)) + "/audio_files/"
 audio_files = glob(audio_dir + "*.mp3")
@@ -68,9 +73,9 @@ def updateCurrencyConversions():
 	
 @client.event
 async def timerTask(time):
-	await asyncio.sleep(time)
+	await sleep(time)
 	updateCurrencyConversions()
-	currencyTimer = asyncio.ensure_future(timerTask(updateTime))
+	currencyTimer = ensure_future(timerTask(updateTime))
 
 @client.event
 async def update_stats():
@@ -79,7 +84,7 @@ async def update_stats():
 			await dblpy.post_guild_count()
 		except Exception as e:
 			ErrorHandler(None, exception=e)
-		await asyncio.sleep(1800)
+		await sleep(1800)
 
 @client.event
 async def on_ready():
@@ -97,7 +102,7 @@ async def on_ready():
 
 	client.loop.create_task(update_stats())
 
-	currencyTimer = asyncio.ensure_future(timerTask(updateTime))
+	currencyTimer = ensure_future(timerTask(updateTime))
 	updateCurrencyConversions()
 
 	Currency("Euros", ["euro", "€"])
@@ -147,7 +152,7 @@ async def on_message(message):
 						vc.play(FFmpegPCMAudio(executable="C:/Program Files (x86)/ffmpeg/bin/ffmpeg.exe", source=audio_file))
 					
 					logWrite(message.guild, "\tPlaying audio file: " + audio_file.replace("\\", "/"))
-					await asyncio.sleep(ceil(MP3(audio_file).info.length))
+					await sleep(ceil(MP3(audio_file).info.length))
 
 					vc.stop()
 					await vc.disconnect()
@@ -192,16 +197,19 @@ async def on_message(message):
 						logWrite(message.guild, "\tMatched currency: " + currency.name)
 						if (any(char.isdigit() for char in message.content)):
 							await currency.sendConverstion(message)
-							logWrite(message.guild, "\tSent conversion")
+							logWrite(message.guild, "\tSent conversion: " + str(currency.num) + " " + currency.name + "to JP = " + "")
 						else:
 							logWrite(message.guild, "\tNo number given in message.")
-							await message.channel.send(message.author.mention + " You did not include a numberto convert!")
+							await message.channel.send(message.author.mention + " You did not include a number to convert!")
 							logWrite(message.guild, "\tSent message indicating no digits in string.")
 						return
 
 				await message.channel.send(message.author.mention + " Unknown currency, `!jp help` for a list of supported currencies.")
 				logWrite(message.guild, "\tNo currency recognized in message: \"" + message.content + "\"")
 				return
+
+			await message.channel.send(message.author.mention + " Unknown command, `!jp help` for a list of commands.")
+			logWrite(message.guild, "No command recognized in message: \"" + message.content + "\" BY USER: " + str(message.author) + "(" + str(message.author.id) + ")")
 	except Exception as e:
 		if (message.guild):
 			ErrorHandler(location=message.guild, member=message.author, exception=e)

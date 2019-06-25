@@ -12,6 +12,7 @@ def botPrint(s):
 class Currency:
 	def __init__(self, name, currencyNameSpaces, conversionRate=None):
 		self.name = name
+		self.num = 0
 		self.nameSpaces = currencyNameSpaces
 		self.conversionRate = conversionRate
 		gvars.currencies.append(self)
@@ -20,35 +21,25 @@ class Currency:
 			self.conversionRate = gvars.currencyPrices[gvars.currencies.index(self)]
 
 	def parseMessage(self, message):
-		if (type(self.nameSpaces) is str):
-			if (message.content.lower().find(self.nameSpaces) != -1):
-				msg = message.content.lower().replace(self.nameSpaces, "")
+		if (type(self.nameSpaces) == str):
+			self.nameSpaces = [self.nameSpaces]
 
-				for s in msg.split(" "):
-					if (s.isdigit()):
-							self.num = float(s)
-							break
-				return True
-			else:
-				return False
-		elif (type(self.nameSpaces) is list):
-			for nameSpace in self.nameSpaces:
-				if (message.content.lower().find(nameSpace) != -1):
-					for nameSpace in self.nameSpaces:
-						msg = message.content.lower().replace(nameSpace, "")
-					for s in msg.split(" "):
-						if (s.isdigit()):
-							self.num = float(s)
-							break
-					return True
+		for nameSpace in self.nameSpaces:
+			if (message.content.lower().find(nameSpace) != -1):
+				for s in message.content.lower().replace(",", "").replace(nameSpace, "").split(" "):
+					try:
+						self.num = float(s)
+						return True
+					except:
+						continue
 
-			return False
+		return False
 
 	@client.event
 	async def sendConverstion(self, message):
-		await message.channel.send(embed=self.generateEmbed(self.num, message))
+		await message.channel.send(embed=self.generateEmbed(message))
 
-	def generateEmbed(self, num, message):
-		embed = Embed(title="Juul Pod Currency Converter", description=message.author.mention + " `" + str(num) + " " + self.name + "` is approximately `" + str(ceil((num / self.conversionRate)*100)/100) + " JP (Juul Pods)`\n `Conversion Rate: ~" + str(self.conversionRate) + " " + self.name + " per JP.`", color=0x8ACC8A)
+	def generateEmbed(self, message):
+		embed = Embed(title="Juul Pod Currency Converter", description=message.author.mention + " `" + str(self.num) + " " + self.name + "` is approximately `" + str(ceil((self.num / self.conversionRate)*100)/100) + " JP (Juul Pods)`\n `Conversion Rate: ~" + str(self.conversionRate) + " " + self.name + " per JP.`", color=0x8ACC8A)
 		embed.set_footer(text="What is this? !jp help | Nullvalue#8123")
 		return embed
