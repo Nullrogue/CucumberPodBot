@@ -75,10 +75,8 @@ async def timerTask(time):
 @client.event
 async def update_stats():
 	while not client.is_closed():
-		logWrite(None, 'Attempting to send server count')
 		try:
 			await dblpy.post_guild_count()
-			logWrite(None, '\tPosted server count ({})'.format(dblpy.guild_count()))
 		except Exception as e:
 			ErrorHandler(None, exception=e)
 		await asyncio.sleep(1800)
