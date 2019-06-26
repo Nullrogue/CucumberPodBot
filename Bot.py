@@ -126,7 +126,11 @@ async def on_ready():
 @client.event
 async def on_message(message):
 	try:
-		if (not message.author.bot):
+		if (not message.author.bot and message.content.lower().startswith("!juulpod") or message.content.lower().startswith("!jp")):
+			if (message.content.lower().startswith("!juulpod") or message.content.lower().startswith("!jp") and type(message.channel) != DMChannel and not message.channel.permissions_for(message.guild.me).send_messages):
+				await message.author.send("I cannot send messages in channel: " + message.channel.mention)
+				return
+
 			if (message.content.lower().startswith("!juulpod rip") or message.content.lower().startswith("!jp rip") and type(message.channel) == TextChannel):
 				logWrite(message.guild, "COMMAND CALLED \"rip\" BY USER: " + str(message.author) + "(" + str(message.author.id) + ") IN TEXT CHANNEL: " + message.channel.name + "(" + str(message.channel.id) + ")")
 				if (message.author.voice):
@@ -162,10 +166,6 @@ async def on_message(message):
 					await message.channel.send(message.author.mention + " You aren't currently in a voice channel bro.")
 					logWrite(message.guild, "\tUser is not connected to a VoiceChannel")
 
-				return
-
-			if (message.content.lower().startswith("!juulpod") or message.content.lower().startswith("!jp") and type(message.channel) != DMChannel and not message.channel.permissions_for(message.guild.me).send_messages):
-				await message.author.send("I cannot send messages in channel: " + message.channel.mention)
 				return
 
 			if (message.content.lower().startswith("!juulpod help") or message.content.lower().startswith("!jp help")):
