@@ -164,7 +164,7 @@ async def on_message(message):
 
 				return
 
-			if (type(message.channel) != DMChannel and not message.channel.permissions_for(message.guild.me).send_messages):
+			if (message.content.lower().startswith("!juulpod") or message.content.lower().startswith("!jp") and type(message.channel) != DMChannel and not message.channel.permissions_for(message.guild.me).send_messages):
 				await message.author.send("I cannot send messages in channel: " + message.channel.mention)
 				return
 
