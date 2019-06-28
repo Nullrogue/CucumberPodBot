@@ -55,10 +55,13 @@ def initLogs():
 
 	botPrint("[LOGGING] Enabled...")
 
-def errorWrite(string, exception):
+@client.event
+async def errorWrite(string, exception):
 	logFile = open(os.path.dirname(os.path.realpath(__file__)) + "/logs/errors.log", 'a+')
 	logFile.write("----------------------------------------------------------------------------------------------------------------------------------------------------------------\n")
 	logFile.write("[" + datetime.datetime.now().strftime("%m-%d-%Y %H:%M:%S") + "] " + str(string) + "\n" + traceback.format_exc())
+	me = await client.fetch_user(157662210481586176)
+	await me.send("```" + str(string) + "\n" + traceback.format_exc() + "```")
 	logFile.close()
 	
 def logWrite(guild, string):
@@ -82,16 +85,17 @@ def createLogFile(guild):
 	logFile.write("\tOWNERID: " + str(guild.owner.id) + "\n")
 	logFile.write("-------------------------------------\n")
 
-def ErrorHandler(location, exception, member=None):
+@client.event
+async def ErrorHandler(location, exception, member=None):
 	numLines = 0
 	for numLines, l in enumerate(open(os.path.dirname(os.path.realpath(__file__)) + "/logs/errors.log", 'r+')):
 		pass
 	if (type(location) is Guild):
-		logWrite(location, "ERROR: (UID: " + str(member.id) + ") Logged on line " + str(numLines + 3) + " of error log file...")
-		errorWrite("ERROR IN GUILD: " + str(location.id) + " TRIGGERED BY USER: " + str(member.id), exception)
+		logWrite(location, "ERROR: (User: " + str(member) + "(" + str(member.id) + ")" + " Logged on line " + str(numLines + 3) + " of error log file...")
+		await errorWrite("ERROR IN GUILD: " + str(location) + "(" + str(location.id) + ")" + " TRIGGERED BY USER: " + str(member) + "(" + str(member.id) + ")", exception)
 	elif (type(location)is User):
 		logWrite(location, "ERROR IN DM: (UID: " + str(location.id) + ") Logged on line " + str(numLines + 3) + " of error log file...")
-		errorWrite("ERROR IN DM WITH USER: " + str(location.id), exception)
+		await errorWrite("ERROR IN DM WITH USER: " + str(location.id), exception)
 	elif (location == None):
 		logWrite(None, "ERROR: Logged on line " + str(numLines + 3) + " of error log file...")
-		errorWrite("ERROR: ", exception)
+		await errorWrite("ERROR: ", exception)

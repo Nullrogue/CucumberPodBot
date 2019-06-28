@@ -84,7 +84,7 @@ async def update_stats():
 		try:
 			await dblpy.post_guild_count()
 		except Exception as e:
-			ErrorHandler(None, exception=e)
+			await ErrorHandler(None, exception=e)
 		await sleep(1800)
 
 @client.event
@@ -101,7 +101,8 @@ async def on_ready():
 
 	await client.change_presence(activity=Activity(type=ActivityType.watching, name="!jp help"))
 
-	client.loop.create_task(update_stats())
+	if (client.user.id == 445098740085161987):
+		client.loop.create_task(update_stats())
 
 	currencyTimer = ensure_future(timerTask(updateTime))
 	updateCurrencyConversions()
@@ -217,9 +218,9 @@ async def on_message(message):
 			logWrite(message.guild, "No command recognized in message: \"" + message.content + "\" BY USER: " + str(message.author) + "(" + str(message.author.id) + ")")
 	except Exception as e:
 		if (message.guild):
-			ErrorHandler(location=message.guild, member=message.author, exception=e)
+			await ErrorHandler(location=message.guild, member=message.author, exception=e)
 		else:
-			ErrorHandler(location=message.author, exception=e)
+			await ErrorHandler(location=message.author, exception=e)
 
 		raise
 
