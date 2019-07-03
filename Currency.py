@@ -24,6 +24,8 @@ class Currency:
 		if (type(self.nameSpaces) == str):
 			self.nameSpaces = [self.nameSpaces]
 
+		self.nameSpaces.append(self.name.lower())
+
 		for nameSpace in self.nameSpaces:
 			if (message.content.lower().find(nameSpace) != -1):
 				for s in message.content.lower().replace(",", "").replace(nameSpace, "").split(" "):

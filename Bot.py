@@ -93,6 +93,7 @@ async def on_ready():
 	botPrint('Logged in as')
 	botPrint(client.user.name)
 	botPrint(client.user.id)
+	botPrint("Guilds: " + str(len(client.guilds)))
 	botPrint('------')
 
 	print("")
@@ -118,11 +119,11 @@ async def on_ready():
 	Currency("Japanese Yen", ["yen", "yen", "¥"])
 	Currency("Chinese Yuan", ["yuan", "cny", "元"])
 	Currency("US Dollars", ["dollar", "usd", "$"], 3.99)
-	Currency("Riot Points", ["riot points", "rp"], 518.7)
-	Currency("V-Bucks", ["v bucks", "v-bucks"], 399)
+	Currency("Riot Points", ["riot point", "rp"], 518.7)
+	Currency("V-Bucks", ["v buck", "v-buck"], 399)
 	Currency("Robux", ["robux", "rbx"], 322.4)
 	Currency("Big Macs", "big mac", 3.99)
-	Currency("Chicken McNuggets", ["nugget", "mcnuggets", "nuggies"], 8.886)
+	Currency("Chicken McNuggets", ["nugget", "mcnugget", "nuggies"], 8.886)
 
 @client.event
 async def on_message(message):
@@ -172,7 +173,7 @@ async def on_message(message):
 			if (message.content.lower().startswith("!juulpod help") or message.content.lower().startswith("!jp help")):
 				logWrite(message.guild, "COMMAND CALLED \"help\" BY USER: " + str(message.author) + "(" + str(message.author.id) + ") IN TEXT CHANNEL: " + ["DM", str(message.channel)][hasattr(message.channel, 'name')] + "(" + str(message.channel.id) + ")")
 				
-				desc = "This bot was created in the hopes to normalize all world wide currencies into one essential value. The Cucumber Juul Pod has been a staple of modern day society, and thus it should be the basis for all world wide economies. This bot converts most prominent currencies found around the world into JP (Juul Pods). Below is a list of the supported currencies that can be converted into JP and their recognizable namespaces. -Nullvalue#8123"
+				desc = "This bot was created in the hopes to normalize all world wide currencies into one essential value. The Cucumber Juul Pod has been a staple of modern day society, and thus it should be the basis for all world wide economies. This bot converts most prominent currencies found around the world into JP (Juul Pods). Below is a list of the supported currencies that can be converted into JP and their recognizable namespaces.\n[[Nullvalue#8123](https://discordbots.org/user/157662210481586176)] [[Github](https://github.com/NullvaIue/CucumberPodBot)] [[Support Server](https://discord.gg/Nyy7C3n)] [[Invite Bot](https://discordapp.com/oauth2/authorize?client_id=445098740085161987&scope=bot&permissions=36727824)]"
 
 				emb = Embed(title="Juul Pod Help", color=0x8ACC8A, description=desc)
 				currencyText = ""
@@ -189,11 +190,12 @@ async def on_message(message):
 							else:
 								namespaceText += "\'" + nameSpace + "\')\n"
 
-				emb.add_field(name="Commands", value="`!jp rip`\n`!jp convert (namespace)`\n", inline=False)
+				emb.add_field(name="Commands", value="`!jp rip`\n`!jp convert [number] [namespace]`\n", inline=False)
 				emb.add_field(name="Currencies", value=currencyText, inline=True)
-				emb.add_field(name="Name Spaces", value=namespaceText, inline=True)
+				emb.add_field(name="Namespaces", value=namespaceText, inline=True)
 				await message.channel.send(embed=emb)
 				logWrite(message.guild, "\tSent help message for user: " + str(message.author) + "(" + str(message.author.id) + ") in TextChannel: " + ["DM", str(message.channel)][hasattr(message.channel, 'name')] + "(" + str(message.channel.id) + ")")
+				
 				return
 
 			if (message.content.lower().startswith("!juulpod convert") or message.content.lower().startswith("!jp convert")):
@@ -203,7 +205,7 @@ async def on_message(message):
 						logWrite(message.guild, "\tMatched currency: " + currency.name)
 						if (any(char.isdigit() for char in message.content)):
 							await currency.sendConverstion(message)
-							logWrite(message.guild, "\tSent conversion: " + str(currency.num) + " " + currency.name + "to JP = " + "")
+							logWrite(message.guild, "\tSent conversion: " + str(currency.num) + " " + currency.name + " to JP = " + str(currency.num/currency.conversionRate))
 						else:
 							logWrite(message.guild, "\tNo number given in message.")
 							await message.channel.send(message.author.mention + " You did not include a number to convert!")
