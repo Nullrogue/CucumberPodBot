@@ -69,7 +69,7 @@ conversion rates accurate and up-to-date. <code>!juulpod help</code> to see a li
   </tr>
   <tr>
     <td>Japanese Yen</td>
-    <td>('yen', 'yen', '¥')</td>
+    <td>('yen', '¥')</td>
   </tr>
   <tr>
     <td>Chinese Yuan</td>
@@ -98,9 +98,5 @@ conversion rates accurate and up-to-date. <code>!juulpod help</code> to see a li
   <tr>
     <td>Chicken McNuggets</td>
     <td>('nugget', 'mcnuggets', 'nuggies')</td>
-  </tr>
-  <tr>
-    <td>Euros</td>
-    <td>('euro', '€')</td>
   </tr>
 </table>

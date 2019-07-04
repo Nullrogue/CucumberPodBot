@@ -116,7 +116,7 @@ async def on_ready():
 	Currency("Singapore Dollars", "sgd")
 	Currency("Swiss Francs", ["franc", "fr."])
 	Currency("Malaysian Ringgits", ["ringgit", "rm", "myr"])
-	Currency("Japanese Yen", ["yen", "yen", "¥"])
+	Currency("Japanese Yen", ["yen", "¥"])
 	Currency("Chinese Yuan", ["yuan", "cny", "元"])
 	Currency("US Dollars", ["dollar", "usd", "$"], 3.99)
 	Currency("Riot Points", ["riot point", "rp"], 518.7)
