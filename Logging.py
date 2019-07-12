@@ -1,6 +1,10 @@
 from discord import Guild
 from discord import User
 from dateutil import tz
+from pbwrap import Pastebin
+from Key import pbKey
+from Key import pbUser
+from Key import pbPass
 
 import traceback
 import os
@@ -60,8 +64,17 @@ async def errorWrite(string, exception):
 	logFile = open(os.path.dirname(os.path.realpath(__file__)) + "/logs/errors.log", 'a+')
 	logFile.write("----------------------------------------------------------------------------------------------------------------------------------------------------------------\n")
 	logFile.write("[" + datetime.datetime.now().strftime("%m-%d-%Y %H:%M:%S") + "] " + str(string) + "\n" + traceback.format_exc())
+	
 	me = await client.fetch_user(157662210481586176)
-	await me.send("```" + str(string) + "\n" + traceback.format_exc() + "```")
+	eMessage = "```" + str(string) + "\n" + traceback.format_exc() + "```"
+	if (len(eMessage) >= 2000):
+		pb = Pastebin(pbKey)
+		pb.authenticate(pbUser, pbPass)
+		url = pb.create_paste(eMessage, api_paste_private=1)
+		await me.send("ERROR: " + url)
+	else:
+		await me.send(eMessage)
+
 	logFile.close()
 	
 def logWrite(guild, string):
