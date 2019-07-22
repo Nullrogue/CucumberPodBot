@@ -102,12 +102,9 @@ async def on_ready():
 
 	await client.change_presence(activity=Activity(type=ActivityType.watching, name="!jp help"))
 
-	if (client.user.id == 445098740085161987):
-		client.loop.create_task(update_stats())
-
 	currencyTimer = ensure_future(timerTask(updateTime))
 	updateCurrencyConversions()
-
+	
 	Currency("Euros", ["euro", "€"])
 	Currency("British Pounds", ["pound", "£"])
 	Currency("Indian Rupees", ["rupee", "₹"])
@@ -125,11 +122,14 @@ async def on_ready():
 	Currency("Big Macs", "big mac", 3.99)
 	Currency("Chicken McNuggets", ["nugget", "mcnugget", "nuggies"], 8.886)
 
+	if (client.user.id == 445098740085161987):
+		client.loop.create_task(update_stats())
+
 @client.event
 async def on_message(message):
 	try:
-		if (not message.author.bot and message.content.lower().startswith("!juulpod") or message.content.lower().startswith("!jp")):
-			if (message.content.lower().startswith("!juulpod") or message.content.lower().startswith("!jp") and type(message.channel) != DMChannel and not message.channel.permissions_for(message.guild.me).send_messages):
+		if (not message.author.bot and message.content.lower().startswith("!juulpod ") or message.content.lower().startswith("!jp ")):
+			if (type(message.channel) != DMChannel and not message.channel.permissions_for(message.guild.me).send_messages):
 				await message.author.send("I cannot send messages in channel: " + message.channel.mention)
 				return
 
@@ -194,6 +194,7 @@ async def on_message(message):
 				emb.add_field(name="Currencies", value=currencyText, inline=True)
 				emb.add_field(name="Namespaces", value=namespaceText, inline=True)
 				await message.channel.send(embed=emb)
+
 				logWrite(message.guild, "\tSent help message for user: " + str(message.author) + "(" + str(message.author.id) + ") in TextChannel: " + ["DM", str(message.channel)][hasattr(message.channel, 'name')] + "(" + str(message.channel.id) + ")")
 				
 				return

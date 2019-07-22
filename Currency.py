@@ -15,17 +15,17 @@ class Currency:
 		self.num = 0
 		self.nameSpaces = currencyNameSpaces
 		self.conversionRate = conversionRate
-		gvars.currencies.append(self)
 
+		gvars.currencies.append(self)
 		if (self.conversionRate == None):
 			self.conversionRate = gvars.currencyPrices[gvars.currencies.index(self)]
 
-	def parseMessage(self, message):
 		if (type(self.nameSpaces) == str):
 			self.nameSpaces = [self.nameSpaces]
+			
+			
 
-		self.nameSpaces.append(self.name.lower())
-
+	def parseMessage(self, message):
 		for nameSpace in self.nameSpaces:
 			if (message.content.lower().find(nameSpace) != -1):
 				for s in message.content.lower().replace(",", "").replace(nameSpace, "").split(" "):
