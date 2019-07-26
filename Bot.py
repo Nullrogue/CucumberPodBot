@@ -23,7 +23,7 @@ from bs4 import BeautifulSoup
 
 try:
 	from Key import *
-	x = DBLKey
+	x = dblKey
 	x = Key
 except Exception as e:
 	print("Couldn't import API keys.")
@@ -39,7 +39,7 @@ import os
 urllib3.disable_warnings()
 client = gvars.client
 
-dblpy = dbl.Client(client, DBLKey)
+dblpy = dbl.Client(client, dblKey)
 
 audio_dir = os.path.dirname(os.path.realpath(__file__)) + "/audio_files/"
 audio_files = glob(audio_dir + "*.mp3")
@@ -83,9 +83,13 @@ async def update_stats():
 	while not client.is_closed():
 		try:
 			await dblpy.post_guild_count()
+			await sleep(1800)
 		except Exception as e:
-			await ErrorHandler(None, exception=e)
-		await sleep(1800)
+			if (e.response.status != None and e.response.status != 503):
+				await ErrorHandler(None, exception=e)
+				await sleep(1800)
+			else:
+				await sleep(300)
 
 @client.event
 async def on_ready():

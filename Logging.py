@@ -43,12 +43,12 @@ def initLogs():
 		
 	if (not os.path.exists(os.path.dirname(os.path.realpath(__file__)) + "/logs/bot.log")):
 		botPrint("[LOGGING] No bot log found, creating one...", process=True)
-		open(os.path.dirname(os.path.realpath(__file__)) + "/logs/bot.log", 'a+')
+		open(os.path.dirname(os.path.realpath(__file__)) + "/logs/bot.log", 'a+', encoding="utf-8")
 		print("DONE!")
 
 	if (not os.path.exists(os.path.dirname(os.path.realpath(__file__)) + "/logs/errors.log")):
 		botPrint("[LOGGING] No error log found, creating one...", process=True)
-		open(os.path.dirname(os.path.realpath(__file__)) + "/logs/errors.log", 'a+')
+		open(os.path.dirname(os.path.realpath(__file__)) + "/logs/errors.log", 'a+', encoding="utf-8")
 		print("DONE!")
 
 	for guild in client.guilds:
@@ -61,7 +61,7 @@ def initLogs():
 
 @client.event
 async def errorWrite(string, exception):
-	logFile = open(os.path.dirname(os.path.realpath(__file__)) + "/logs/errors.log", 'a+')
+	logFile = open(os.path.dirname(os.path.realpath(__file__)) + "/logs/errors.log", 'a+', encoding="utf-8")
 	logFile.write("----------------------------------------------------------------------------------------------------------------------------------------------------------------\n")
 	logFile.write("[" + datetime.datetime.now().strftime("%m-%d-%Y %H:%M:%S") + "] " + str(string) + "\n" + traceback.format_exc())
 	
@@ -79,16 +79,16 @@ async def errorWrite(string, exception):
 	
 def logWrite(guild, string):
 	if (guild == None):
-		logFile = open(os.path.dirname(os.path.realpath(__file__)) + "/logs/bot.log", 'a+')
+		logFile = open(os.path.dirname(os.path.realpath(__file__)) + "/logs/bot.log", 'a+', encoding="utf-8")
 		logFile.write("[" + datetime.datetime.now().strftime("%m-%d-%Y %H:%M:%S") + "] " + str(string) + "\n")
 		logFile.close()
 	else:
-		logFile = open(os.path.dirname(os.path.realpath(__file__)) + "/logs/" + str(guild.id) + ".log", 'a+')
+		logFile = open(os.path.dirname(os.path.realpath(__file__)) + "/logs/" + str(guild.id) + ".log", 'a+', encoding="utf-8")
 		logFile.write("[" + datetime.datetime.now().strftime("%m-%d-%Y %H:%M:%S") + "] " + str(string) + "\n")
 		logFile.close()
 
 def createLogFile(guild):
-	logFile = open(os.path.dirname(os.path.realpath(__file__)) + "/logs/" + str(guild.id) + ".log", 'a+')
+	logFile = open(os.path.dirname(os.path.realpath(__file__)) + "/logs/" + str(guild.id) + ".log", 'a+', encoding="utf-8")
 	logFile.write("-------------------------------------\n")
 	logFile.write("Log File Created: " + datetime.datetime.now().strftime("%m-%d-%Y %H:%M:%S") + "\n")
 	logFile.write("Bot joined guild: " + str(guild.me.joined_at.replace(tzinfo=tz.gettz('UTC')).astimezone(tz.gettz('America/New_York')).strftime("%m-%d-%Y %H:%M:%S\n")))
@@ -101,7 +101,7 @@ def createLogFile(guild):
 @client.event
 async def ErrorHandler(location, exception, member=None):
 	numLines = 0
-	for numLines, l in enumerate(open(os.path.dirname(os.path.realpath(__file__)) + "/logs/errors.log", 'r+')):
+	for numLines, l in enumerate(open(os.path.dirname(os.path.realpath(__file__)) + "/logs/errors.log", 'r+', encoding="utf-8")):
 		pass
 	if (type(location) is Guild):
 		logWrite(location, "ERROR: (User: " + str(member) + "(" + str(member.id) + ")" + " Logged on line " + str(numLines + 3) + " of error log file...")
