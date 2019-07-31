@@ -45,38 +45,48 @@ audio_dir = os.path.dirname(os.path.realpath(__file__)) + "/audio_files/"
 audio_files = glob(audio_dir + "*.mp3")
 
 juul = 15.99/4
-updateTime = 3600
-
-def botPrint(s, process=False):
-	if (not process):
-		print("[" + datetime.datetime.now().strftime("%m-%d-%Y %H:%M:%S") + "] " + str(s))
-	else:
-		print("[" + datetime.datetime.now().strftime("%m-%d-%Y %H:%M:%S") + "] " + str(s), end="")
+updateTime = 5
 
 def updateCurrencyConversions():
-	pool = urllib3.PoolManager()
-	Content = pool.request('GET', 'https://www.x-rates.com/table/?from=USD&amount=1')
-	soup = BeautifulSoup(Content.data, 'html.parser')
+	try:
+		pool = urllib3.PoolManager()
+		Content = pool.request('GET', 'https://www.x-rates.com/table/?from=USD&amount=1')
+		soup = BeautifulSoup(Content.data, 'html.parser')
 
-	currenciesElements = soup.find_all('td', {'class': 'rtRates'})
+		currenciesElements = soup.find_all('td', {'class': 'rtRates'})
 
-	currenciesElements = currenciesElements[:20]
-	for k, v in enumerate(currenciesElements):
-		if (k % 2 != 0 or k != 0):
-			del currenciesElements[k]
-
-	if (gvars.currencyPrices == []):
+		currenciesElements = currenciesElements[:20]
 		for k, v in enumerate(currenciesElements):
-			gvars.currencyPrices.append(float(v.contents[0].decode_contents()) * juul)
-	else:
-		for k, v in enumerate(currenciesElements):
-			gvars.currencyPrices[k] = float(v.contents[0].decode_contents()) * juul
-	
-@client.event
-async def timerTask(time):
-	await sleep(time)
-	updateCurrencyConversions()
-	currencyTimer = ensure_future(timerTask(updateTime))
+			if (k % 2 != 0 or k != 0):
+				del currenciesElements[k]
+
+		if (gvars.currencyPrices == []):
+			for k, v in enumerate(currenciesElements):
+				gvars.currencyPrices.append(float(v.contents[0].decode_contents()) * juul)
+		else:
+			for k, v in enumerate(currenciesElements):
+				gvars.currencyPrices[k] = float(v.contents[0].decode_contents()) * juul
+	except Exception as e:
+		pass
+
+updateCurrencyConversions()
+
+Currency("Euros", ["euro", "€"])
+Currency("British Pounds", ["pound", "£"])
+Currency("Indian Rupees", ["rupee", "₹"])
+Currency("Australian Dollars", "aud")
+Currency("Canadian Dollars", "cad")
+Currency("Singapore Dollars", "sgd")
+Currency("Swiss Francs", ["franc", "fr."])
+Currency("Malaysian Ringgits", ["ringgit", "rm", "myr"])
+Currency("Japanese Yen", ["yen", "¥"])
+Currency("Chinese Yuan", ["yuan", "cny", "元"])
+Currency("US Dollars", ["dollar", "usd", "$"], 3.99)
+Currency("Riot Points", ["riot point", "rp"], 518.7)
+Currency("V-Bucks", ["v buck", "v-buck"], 399)
+Currency("Robux", ["robux", "rbx"], 322.4)
+Currency("Big Macs", "big mac", 3.99)
+Currency("Chicken McNuggets", ["nugget", "mcnugget", "nuggies"], 8.886)
 
 @client.event
 async def update_stats():
@@ -90,6 +100,18 @@ async def update_stats():
 				await sleep(1800)
 			else:
 				await sleep(300)
+
+def botPrint(s, process=False):
+	if (not process):
+		print("[" + datetime.datetime.now().strftime("%m-%d-%Y %H:%M:%S") + "] " + str(s))
+	else:
+		print("[" + datetime.datetime.now().strftime("%m-%d-%Y %H:%M:%S") + "] " + str(s), end="")
+	
+@client.event
+async def timerTask(time):
+	await sleep(time)
+	updateCurrencyConversions()
+	currencyTimer = ensure_future(timerTask(updateTime))
 
 @client.event
 async def on_ready():
@@ -105,29 +127,11 @@ async def on_ready():
 	print("")
 
 	await client.change_presence(activity=Activity(type=ActivityType.watching, name="!jp help"))
-
-	currencyTimer = ensure_future(timerTask(updateTime))
-	updateCurrencyConversions()
 	
-	Currency("Euros", ["euro", "€"])
-	Currency("British Pounds", ["pound", "£"])
-	Currency("Indian Rupees", ["rupee", "₹"])
-	Currency("Australian Dollars", "aud")
-	Currency("Canadian Dollars", "cad")
-	Currency("Singapore Dollars", "sgd")
-	Currency("Swiss Francs", ["franc", "fr."])
-	Currency("Malaysian Ringgits", ["ringgit", "rm", "myr"])
-	Currency("Japanese Yen", ["yen", "¥"])
-	Currency("Chinese Yuan", ["yuan", "cny", "元"])
-	Currency("US Dollars", ["dollar", "usd", "$"], 3.99)
-	Currency("Riot Points", ["riot point", "rp"], 518.7)
-	Currency("V-Bucks", ["v buck", "v-buck"], 399)
-	Currency("Robux", ["robux", "rbx"], 322.4)
-	Currency("Big Macs", "big mac", 3.99)
-	Currency("Chicken McNuggets", ["nugget", "mcnugget", "nuggies"], 8.886)
+	currencyTimer = ensure_future(timerTask(updateTime))
 
 	if (client.user.id == 445098740085161987):
-		client.loop.create_task(update_stats())
+		updateTask = client.loop.create_task(update_stats())
 
 @client.event
 async def on_message(message):

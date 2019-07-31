@@ -91,7 +91,7 @@ def createLogFile(guild):
 	logFile = open(os.path.dirname(os.path.realpath(__file__)) + "/logs/" + str(guild.id) + ".log", 'a+', encoding="utf-8")
 	logFile.write("-------------------------------------\n")
 	logFile.write("Log File Created: " + datetime.datetime.now().strftime("%m-%d-%Y %H:%M:%S") + "\n")
-	logFile.write("Bot joined guild: " + str(guild.me.joined_at.replace(tzinfo=tz.gettz('UTC')).astimezone(tz.gettz('America/New_York')).strftime("%m-%d-%Y %H:%M:%S\n")))
+	logFile.write("Bot joined guild: " + str(guild.me.joined_at.replace(tzinfo=tz.tzutc()).astimezone(tz.tzlocal()).strftime("%m-%d-%Y %H:%M:%S\n")))
 	logFile.write("GUILD INFO:\n")
 	logFile.write("\tNAME: " + guild.name + "\n")
 	logFile.write("\tOWNER: " + str(guild.owner) + "\n")

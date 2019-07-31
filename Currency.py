@@ -17,6 +17,7 @@ class Currency:
 		self.conversionRate = conversionRate
 
 		gvars.currencies.append(self)
+		
 		if (self.conversionRate == None):
 			self.conversionRate = gvars.currencyPrices[gvars.currencies.index(self)]
 
