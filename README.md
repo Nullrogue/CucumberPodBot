@@ -26,7 +26,7 @@ conversion rates accurate and up-to-date. <code>!juulpod help</code> to see a li
     <td>!juulpod rip</td>
   </tr>
   <tr>
-    <td>!juulpod convert [number] [namespace]</td>
+    <td>!juulpod convert [number] [namespace] (Ex. !juulpod convert 500 usd)</td>
   </tr>
 </table>
 

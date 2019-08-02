@@ -47,6 +47,8 @@ audio_files = glob(audio_dir + "*.mp3")
 juul = 15.99/4
 updateTime = 5
 
+ignore_statuses = [ 503, 504 ]
+
 def updateCurrencyConversions():
 	try:
 		pool = urllib3.PoolManager()
@@ -85,7 +87,7 @@ Currency("US Dollars", ["dollar", "usd", "$"], 3.99)
 Currency("Riot Points", ["riot point", "rp"], 518.7)
 Currency("V-Bucks", ["v buck", "v-buck"], 399)
 Currency("Robux", ["robux", "rbx"], 322.4)
-Currency("Big Macs", "big mac", 3.99)
+Currency("Big Macs", ["big mac", "bigmac"], 3.99)
 Currency("Chicken McNuggets", ["nugget", "mcnugget", "nuggies"], 8.886)
 
 @client.event
@@ -95,7 +97,7 @@ async def update_stats():
 			await dblpy.post_guild_count()
 			await sleep(1800)
 		except Exception as e:
-			if (e.response.status != None and e.response.status != 503):
+			if (e.response.status != None and e.response.status not in ignore_statuses):
 				await ErrorHandler(None, exception=e)
 				await sleep(1800)
 			else:
@@ -198,7 +200,7 @@ async def on_message(message):
 							else:
 								namespaceText += "\'" + nameSpace + "\')\n"
 
-				emb.add_field(name="Commands", value="`!jp rip`\n`!jp convert [number] [namespace]`\n", inline=False)
+				emb.add_field(name="Commands", value="`!jp rip`\n`!jp convert [number] [namespace] (Ex. !juulpod convert 500 usd)`\n", inline=False)
 				emb.add_field(name="Currencies", value=currencyText, inline=True)
 				emb.add_field(name="Namespaces", value=namespaceText, inline=True)
 				await message.channel.send(embed=emb)

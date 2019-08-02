@@ -70,7 +70,7 @@ async def errorWrite(string, exception):
 	if (len(eMessage) >= 2000):
 		pb = Pastebin(pbKey)
 		pb.authenticate(pbUser, pbPass)
-		url = pb.create_paste(eMessage, api_paste_private=1)
+		url = pb.create_paste(eMessage, api_paste_private=1, api_paste_name="ERROR: " + type(exception).__name__)
 		await me.send("ERROR: " + url)
 	else:
 		await me.send(eMessage)
