@@ -41,7 +41,7 @@ import os
 urllib3.disable_warnings()
 client = gvars.client
 
-dblpy = dbl.Client(client, dblKey)
+dblpy = dbl.DBLClient(client, dblKey)
 
 audio_dir = os.path.dirname(os.path.realpath(__file__)) + "/audio_files/"
 audio_files = glob(audio_dir + "*.mp3")
