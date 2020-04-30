@@ -23,8 +23,6 @@ class Currency:
 
 		if (type(self.nameSpaces) == str):
 			self.nameSpaces = [self.nameSpaces]
-			
-			
 
 	def parseMessage(self, message):
 		for nameSpace in self.nameSpaces:
@@ -39,7 +37,7 @@ class Currency:
 		return False
 
 	@client.event
-	async def sendConverstion(self, message):
+	async def sendConversion(self, message):
 		await message.channel.send(embed=self.generateEmbed(message))
 
 	def generateEmbed(self, message):

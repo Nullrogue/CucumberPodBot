@@ -13,6 +13,7 @@ from discord import User
 from discord import TextChannel
 from discord import DMChannel
 from discord import ClientException
+from discord import VoiceRegion
 from asyncio import ensure_future
 from asyncio import sleep
 from Logging import *
@@ -34,6 +35,7 @@ import datetime
 import urllib3
 import string
 import dbl
+import re
 import os
 
 urllib3.disable_warnings()
@@ -46,8 +48,6 @@ audio_files = glob(audio_dir + "*.mp3")
 
 juul = 15.99/4
 updateTime = 5
-
-ignore_statuses = [ 503, 504 ]
 
 def updateCurrencyConversions():
 	try:
@@ -97,7 +97,7 @@ async def update_stats():
 			await dblpy.post_guild_count()
 			await sleep(1800)
 		except Exception as e:
-			if (e.response.status != None and e.response.status not in ignore_statuses):
+			if (e.response.status != None and not re.match("5[0-9]*", e.response.status)):
 				await ErrorHandler(None, exception=e)
 				await sleep(1800)
 			else:
@@ -117,6 +117,11 @@ async def timerTask(time):
 
 @client.event
 async def on_ready():
+	for guild in client.guilds:
+		if (not guild.me):
+			botPrint("Leaving guild: " + str(guild.id))
+			await guild.leave()
+
 	botPrint('------')
 	botPrint('Logged in as')
 	botPrint(client.user.name)
@@ -166,7 +171,7 @@ async def on_message(message):
 					try:
 						vc.play(FFmpegPCMAudio(audio_file))
 					except:
-						vc.play(FFmpegPCMAudio(executable="C:/Program Files (x86)/ffmpeg/bin/ffmpeg.exe", source=audio_file))
+						vc.play(FFmpegPCMAudio(executable=gvars.ffmpegPath, source=audio_file))
 					
 					logWrite(message.guild, "\tPlaying audio file: " + audio_file.replace("\\", "/"))
 					await sleep(ceil(MP3(audio_file).info.length))
@@ -215,7 +220,7 @@ async def on_message(message):
 					if (currency.parseMessage(message)):
 						logWrite(message.guild, "\tMatched currency: " + currency.name)
 						if (any(char.isdigit() for char in message.content)):
-							await currency.sendConverstion(message)
+							await currency.sendConversion(message)
 							logWrite(message.guild, "\tSent conversion: " + str(currency.num) + " " + currency.name + " to JP = " + str(currency.num/currency.conversionRate))
 						else:
 							logWrite(message.guild, "\tNo number given in message.")

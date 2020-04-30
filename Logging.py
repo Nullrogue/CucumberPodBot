@@ -33,7 +33,7 @@ async def on_guild_remove(guild):
 	if (os.path.exists(os.path.dirname(os.path.realpath(__file__)) + "/logs/" + str(guild.id) + ".log")):
 		logWrite(guild, "BOT REMOVED FROM GUILD")
 
-	logWrite(None, "Bot removed from guild: " + str(guild) + "(" + str(guild.id) + ")")
+	logWrite(None, "Bot removed from guild: " + guild.name + "(" + str(guild.id) + ")")
 
 def initLogs():
 	if (not os.path.isdir(os.path.dirname(os.path.realpath(__file__)) + "/logs/")):
